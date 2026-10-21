@@ -1,0 +1,9 @@
+{
+  "name": "soda-cache-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pinned local LMDB-JS reader runtime",
+  "dependencies": {
+    "lmdb": "3.5.8"
+  }
+}

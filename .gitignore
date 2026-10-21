@@ -1,0 +1,50 @@
+# Environments and generated build/release output
+.venv/
+.venv-build/
+venv/
+__pycache__/
+*.py[cod]
+build/
+dist/
+release/
+*.spec
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Regenerated runtime. Committed inputs live in scripts/cache-runtime/.
+tools/
+node_modules/
+*.exe
+*.dll
+*.node
+*.zip
+*.7z
+
+# Local research and personal verification media
+research/
+*.flac
+*.m4a
+*.mp3
+*.opus
+*.wav
+*.aac
+*.mp4
+*.bin
+*.db
+*.db-lock
+.soda-*/
+
+# Local configuration, credentials, editor state, and logs
+.env
+.env.*
+!.env.example
+.npmrc
+*.log
+settings.json
+cookies*.txt
+session*.json
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

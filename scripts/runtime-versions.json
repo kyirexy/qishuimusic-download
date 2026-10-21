@@ -1,0 +1,7 @@
+{
+  "pythonAbi": "3.11",
+  "ciPython": "3.11.9",
+  "node": "22.19.0",
+  "nodeWinX64ZipSha256": "ea3fad0e67a991d8477d8c01344b56e69c676ccb733f065b22436994b1253f86",
+  "lmdb": "3.5.8"
+}
