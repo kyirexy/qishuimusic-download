@@ -105,7 +105,10 @@ class IntegrationTests(unittest.TestCase):
             self.assertAlmostEqual(result["duration"], 2, places=2)
             self.assertTrue(Path(result["path"]).is_file())
             self.assertEqual(len(sent), 2)
-            self.assertEqual(list((root / "output").iterdir()), [Path(result["path"])])
+            self.assertEqual(
+                [path.resolve() for path in (root / "output").iterdir()],
+                [Path(result["path"]).resolve()],
+            )
 
             def pcm(path):
                 return subprocess.run([
@@ -132,7 +135,10 @@ class IntegrationTests(unittest.TestCase):
             self.assertAlmostEqual(result["duration"], 2, delta=0.1)
             target = Path(result["path"])
             self.assertEqual(target.suffix, ".m4a")
-            self.assertEqual(list((root / "output").iterdir()), [target])
+            self.assertEqual(
+                [path.resolve() for path in (root / "output").iterdir()],
+                [target.resolve()],
+            )
             self.assertEqual(len(sent), 2)
             original_packets = self.packet_hashes(original)
             self.assertGreater(len(original_packets), 1)

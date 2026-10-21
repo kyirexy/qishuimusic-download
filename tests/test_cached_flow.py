@@ -357,7 +357,10 @@ class CachedAudioIntegrationTests(unittest.TestCase):
             self.assertEqual(result["source"], "official_cache")
             self.assertFalse(result["is_lossless"])
             self.assertEqual(target.suffix, ".m4a")
-            self.assertEqual(list((root / "output").iterdir()), [target])
+            self.assertEqual(
+                [path.resolve() for path in (root / "output").iterdir()],
+                [target.resolve()],
+            )
 
 
 class OfficialPlaybackContractTests(unittest.TestCase):
