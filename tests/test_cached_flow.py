@@ -163,7 +163,10 @@ class CachedFlowTests(unittest.TestCase):
         self.assertEqual(Path(result["path"]).read_bytes(), self.cache_path.read_bytes())
         self.assertEqual(self.exporter.call_args.kwargs["expected_duration"], 2.0)
         self.assertEqual(self.exporter.call_args.kwargs["expected_codec"], "aac")
-        self.assertEqual(list(self.output.iterdir()), [Path(result["path"])])
+        self.assertEqual(
+            [path.resolve() for path in self.output.iterdir()],
+            [Path(result["path"]).resolve()],
+        )
 
     def test_precancelled_does_not_discover_cache_or_launch_player(self):
         cancel = threading.Event()

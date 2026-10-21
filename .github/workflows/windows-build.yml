@@ -49,12 +49,31 @@ jobs:
           if ($version -notmatch '^\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?$') { throw 'Invalid release version.' }
           "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
+      - name: Prepare FFmpeg 8.1.1 for tests
+        run: |
+          $ffmpegArchive = Join-Path $env:RUNNER_TEMP 'ffmpeg-8.1.1-full_build.zip'
+          $ffmpegDirectory = Join-Path $env:RUNNER_TEMP 'ffmpeg-test-bin'
+          # Fixed upstream release and SHA-256 from the Gyan.FFmpeg 8.1.1 WinGet manifest.
+          Invoke-WebRequest -Uri 'https://github.com/GyanD/codexffmpeg/releases/download/8.1.1/ffmpeg-8.1.1-full_build.zip' -OutFile $ffmpegArchive
+          $expectedHash = '49B28C5F16ADDD40239A66949973458769B7056FB7752C30AC0D53389D09A552'
+          if ((Get-FileHash -LiteralPath $ffmpegArchive -Algorithm SHA256).Hash -ne $expectedHash) { throw 'FFmpeg archive checksum mismatch.' }
+          New-Item -ItemType Directory -Path $ffmpegDirectory -Force | Out-Null
+          $archive = [IO.Compression.ZipFile]::OpenRead($ffmpegArchive)
+          try {
+            foreach ($name in @('ffmpeg.exe', 'ffprobe.exe')) {
+              $entries = @($archive.Entries | Where-Object { $_.FullName.Replace('\', '/') -eq "ffmpeg-8.1.1-full_build/bin/$name" })
+              if ($entries.Count -ne 1) { throw "Missing or ambiguous FFmpeg executable: $name" }
+              [IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0], (Join-Path $ffmpegDirectory $name), $false)
+            }
+          } finally { $archive.Dispose() }
+          $ffmpegDirectory | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
       - name: Build and check Windows package
         env:
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)) {
-            Write-Output 'FFmpeg is not installed on this runner. Audio integration tests will report skipped; FFmpeg is never bundled.'
+          if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue) -or -not (Get-Command ffprobe -ErrorAction SilentlyContinue)) {
+            throw 'FFmpeg and FFprobe are required for the complete CI test suite.'
           }
           & .\build.ps1 -Version $env:RELEASE_VERSION
 

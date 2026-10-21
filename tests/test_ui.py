@@ -228,7 +228,10 @@ class UiBehaviorTests(unittest.TestCase):
         self._join_worker()
         self._drain()
         saved = json.loads(self.ui.settings_path.read_text(encoding="utf-8"))
-        self.assertEqual(saved, {"output_dir": str(self.directory / "downloads"), "quality": "lossless"})
+        self.assertEqual(
+            {**saved, "output_dir": Path(saved["output_dir"]).resolve()},
+            {"output_dir": (self.directory / "downloads").resolve(), "quality": "lossless"},
+        )
         self.assertEqual(self.backend.call_args.kwargs["quality"], "lossless")
 
     def test_unknown_saved_quality_uses_default(self):
